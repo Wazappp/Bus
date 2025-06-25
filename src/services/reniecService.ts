@@ -1,4 +1,4 @@
-// Servicio para integración con RENIEC
+// Servicio para integración con RENIEC - API actualizada
 export interface ReniecData {
   dni: string;
   nombres: string;
@@ -20,7 +20,7 @@ export interface ParentescoData {
 }
 
 class ReniecService {
-  private baseUrl = 'https://api.apis.net.pe/v2/reniec/dni';
+  private baseUrl = 'https://apiperu.dev/api/dni';
   private token = '4591c22ac6c2a2e6443227d3ff21f66883c4f9a2a882eabcd0ab20aa07e7f8e1';
 
   async consultarDNI(dni: string): Promise<ReniecData | null> {
@@ -32,9 +32,9 @@ class ReniecService {
 
       console.log(`Consultando DNI ${dni} en RENIEC...`);
       
-      // Intentar con la API real de RENIEC
+      // Consultar con la API real de RENIEC
       try {
-        const response = await fetch(`${this.baseUrl}?numero=${dni}`, {
+        const response = await fetch(`${this.baseUrl}/${dni}`, {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
@@ -47,22 +47,26 @@ class ReniecService {
           const data = await response.json();
           console.log('Respuesta exitosa de RENIEC:', data);
           
-          // Mapear la respuesta de la API real al formato esperado
-          return {
-            dni: data.numeroDocumento || dni,
-            nombres: data.nombres || '',
-            apellidoPaterno: data.apellidoPaterno || '',
-            apellidoMaterno: data.apellidoMaterno || '',
-            fechaNacimiento: data.fechaNacimiento || '',
-            sexo: data.sexo === 'MASCULINO' ? 'M' : 'F',
-            estadoCivil: data.estadoCivil || '',
-            ubigeo: data.ubigeo || '',
-            direccion: data.direccion || ''
-          };
+          // Mapear la respuesta de la API al formato esperado
+          if (data.success && data.data) {
+            const personData = data.data;
+            return {
+              dni: personData.numero || dni,
+              nombres: personData.nombres || '',
+              apellidoPaterno: personData.apellido_paterno || '',
+              apellidoMaterno: personData.apellido_materno || '',
+              fechaNacimiento: personData.fecha_nacimiento || '',
+              sexo: personData.sexo === 'MASCULINO' ? 'M' : 'F',
+              estadoCivil: personData.estado_civil || '',
+              ubigeo: personData.ubigeo || '',
+              direccion: personData.direccion || ''
+            };
+          } else {
+            console.log('No se encontraron datos para el DNI:', dni);
+            return this.getFallbackData(dni);
+          }
         } else {
           console.log(`Error en API RENIEC: ${response.status} - ${response.statusText}`);
-          
-          // Si la API real falla, usar datos simulados como fallback
           return this.getFallbackData(dni);
         }
       } catch (apiError) {

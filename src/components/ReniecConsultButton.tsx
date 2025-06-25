@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import { Search, CheckCircle, AlertCircle, Loader, Database } from 'lucide-react';
 import { reniecService, ReniecData } from '../services/reniecService';
 
 interface ReniecConsultButtonProps {
@@ -57,16 +57,16 @@ export function ReniecConsultButton({
   };
 
   const getButtonColor = () => {
-    if (status === 'success') return 'bg-green-600 hover:bg-green-700';
-    if (status === 'error') return 'bg-red-600 hover:bg-red-700';
-    return 'bg-blue-600 hover:bg-blue-700';
+    if (status === 'success') return 'bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600';
+    if (status === 'error') return 'bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600';
+    return 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600';
   };
 
   const getIcon = () => {
     if (loading) return <Loader className="h-4 w-4 animate-spin" />;
     if (status === 'success') return <CheckCircle className="h-4 w-4" />;
     if (status === 'error') return <AlertCircle className="h-4 w-4" />;
-    return <Search className="h-4 w-4" />;
+    return <Database className="h-4 w-4" />;
   };
 
   return (
@@ -79,6 +79,7 @@ export function ReniecConsultButton({
           px-4 py-3 text-white rounded-lg transition-all duration-300 
           flex items-center justify-center space-x-2 font-medium
           disabled:bg-gray-400 disabled:cursor-not-allowed
+          shadow-lg hover:shadow-xl transform hover:scale-105
           ${getButtonColor()}
           ${className}
         `}
@@ -93,10 +94,10 @@ export function ReniecConsultButton({
       
       {message && (
         <div className={`
-          mt-2 text-xs px-2 py-1 rounded text-center
-          ${status === 'success' ? 'text-green-700 bg-green-100 dark:text-green-400 dark:bg-green-900/20' : 
-            status === 'error' ? 'text-red-700 bg-red-100 dark:text-red-400 dark:bg-red-900/20' : 
-            'text-blue-700 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/20'}
+          mt-2 text-xs px-3 py-2 rounded-lg text-center font-medium
+          ${status === 'success' ? 'text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-900/30' : 
+            status === 'error' ? 'text-red-700 bg-red-100 dark:text-red-300 dark:bg-red-900/30' : 
+            'text-blue-700 bg-blue-100 dark:text-blue-300 dark:bg-blue-900/30'}
         `}>
           {message}
         </div>
